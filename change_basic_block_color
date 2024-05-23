@@ -1,0 +1,23 @@
+import ida_funcs
+import idaapi
+import ida_graph
+
+def print_basic_block_addresses(func_ea):
+    func = ida_funcs.get_func(func_ea)
+    if func is None:
+        print("Function not found at address 0x{:X}".format(func_ea))
+        return
+
+    print("Basic block start addresses for function at 0x{:X}:".format(func_ea))
+    for each_block in idaapi.FlowChart(func):
+        if 0x59E == each_block.start_ea:
+            p = ida_graph.node_info_t()
+            p.bg_color = 0x00ff00 # green
+            print("0x{:X}".format(each_block.start_ea), each_block.id)
+            print("set-color!")
+            ida_graph.set_node_info(func.start_ea, each_block.id, p, idaapi.NIF_BG_COLOR | idaapi.NIF_FRAME_COLOR)
+
+# Address of the function to print basic block start addresses
+func_address = 0x47E
+
+print_basic_block_addresses(func_address)
