@@ -10,6 +10,12 @@
 
 使用轻量级的模拟执行插件，记录执行过程中对于data段的修改，用于对抗将字符串解密放到函数开头的混淆。
 
+# unicorn_fast_string.py
+
+对于大型（超过50M）的二进制，比如ios的应用，emu_fast_string中使用的插件效率慢到没法用。
+
+这个组件使用unicorn主动加载，能快的多，但是要自己定制很多功能。
+
 # ios_calling_convention_FIX
 
 demo
@@ -31,3 +37,5 @@ __text:00000001011B4190                 MOV             X0, X24 ; id
 __text:00000001011B4194                 B               _objc_release
 __text:00000001011B4194 ; End of function objc_release_X24_912
 ```
+
+
