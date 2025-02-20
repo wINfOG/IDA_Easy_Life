@@ -108,11 +108,12 @@ def hook_mem(uc: unicorn.Uc, access, address, size, value, user_data):
         % (address, size, value)
     )
     mu.mem_map(address // 0x1000 * 0x1000, 0x1000)
+    print(f"mem_map {hex(address // 0x1000 * 0x1000)}")
     print("mem_map")
     data = ida_bytes.get_bytes(address // 0x1000 * 0x1000, 0x1000)
-    mu.mem_write(address, data)
+    mu.mem_write(address // 0x1000 * 0x1000, data)
     print("mem_write")
-    return 0
+    return True
 
 def read_hook(emu, access, address, size, value, user_data):
 
