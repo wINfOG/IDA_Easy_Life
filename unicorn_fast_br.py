@@ -133,6 +133,20 @@ def init_unicorn_from_function(func_start: int, func_end: int):
 """
 br_addr = None
 
+def hook_mem_invalid(uc, access, address, size, value, user_data):
+    print(f"hook_mem pc={hex(uc.reg_read(UC_ARM64_REG_PC))}")
+
+    print(
+        "! <M>  Missing memory at 0x%x, data size = %u, data value = 0x%x"
+        % (address, size, value)
+    )
+    uc.mem_map(address // 0x1000 * 0x1000, 0x1000)
+    print(f"mem_map {hex(address // 0x1000 * 0x1000)}")
+    data = ida_bytes.get_bytes(address // 0x1000 * 0x1000, 0x1000)
+    if data:
+        uc.mem_write(address // 0x1000 * 0x1000, data)
+    return True
+
 def go():
 
     global br_addr
@@ -159,7 +173,10 @@ def go():
 
 
     unicorn_emu = init_unicorn_from_function(func_start_addr, do_func.end_ea)
-        
+    
+    #
+    unicorn_emu.hook_add(UC_HOOK_MEM_READ_UNMAPPED | UC_HOOK_MEM_WRITE_UNMAPPED, hook_mem_invalid)
+
     unicorn_emu.emu_start(func_start_addr, end_address)
     ret = unicorn_emu.reg_read(reg_names[register_name])
 
