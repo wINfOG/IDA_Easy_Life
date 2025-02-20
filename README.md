@@ -2,13 +2,13 @@
 
 公开的只支持arm64的指令集
 
-# emu_fast_br.py
+# flare_fast_br.py
 
-通过轻量级的模拟执行插件，用于对抗函数开头br register 的花指令混淆。
+使用flare轻量级的模拟执行插件，用于对抗函数开头br register 的花指令混淆。
 
-# emu_fast_string.py
+# flare_fast_string.py
 
-使用轻量级的模拟执行插件，记录执行过程中对于data段的修改，用于对抗将字符串解密放到函数开头的混淆。
+使用flare轻量级的模拟执行插件，记录执行过程中对于data段的修改，用于对抗将字符串解密放到函数开头的混淆。
 
 # unicorn_fast_string.py / unicorn_fast_br.py
 
