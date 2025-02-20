@@ -10,7 +10,7 @@
 
 使用轻量级的模拟执行插件，记录执行过程中对于data段的修改，用于对抗将字符串解密放到函数开头的混淆。
 
-# unicorn_fast_string.py
+# unicorn_fast_string.py / unicorn_fast_br.py
 
 对于大型（超过50M）的二进制，比如ios的应用，emu_fast_string中使用的插件效率慢到没法用。
 
