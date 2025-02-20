@@ -5,6 +5,7 @@ import idautils
 import ida_ua
 import ida_funcs
 import ida_segment
+import keypatch
 
 from unicorn import UC_MEM_READ, UC_MEM_WRITE
 from unicorn import *
@@ -74,6 +75,27 @@ reg_names = {
     "SP": unicorn.arm64_const.UC_ARM64_REG_SP,
 }
 
+def patch_one(address: int, new_instruction: str):
+    kp_asm = keypatch.Keypatch_Asm()
+    if kp_asm.arch is None:
+        print("ERROR: Keypatch cannot handle this architecture")
+        return False
+
+    assembly = kp_asm.ida_resolve(new_instruction, address)
+    (encoding, count) = kp_asm.assemble(assembly, address)
+
+    if encoding is None:
+        print("Keypatch: no need to patch, ")
+        return False
+
+    # 这里没有处理指令的长度问题，只在arm下能用
+    patch_data = ''.join(chr(c) for c in encoding)
+    patch_len = len(patch_data)
+    kp_asm.patch(address, patch_data, patch_len)
+
+    print(f"patch !! {assembly}")
+
+
 def mmap_segments(emu, seg_name):
     data_segment = ida_segment.get_segm_by_name(seg_name)
     data_segment_start = data_segment.start_ea
@@ -141,8 +163,11 @@ def go():
     unicorn_emu.emu_start(func_start_addr, end_address)
     ret = unicorn_emu.reg_read(reg_names[register_name])
 
-    print(f"ret = {hex(ret)}")
-
+    if ret > 0x1000:
+        print(f"final = {hex(ret)}")
+        patch_one(br_addr, f"b {hex(ret)}")
+    else:
+        print(f"[error] final = {hex(ret)}")
 
 if __name__ == '__main__':
     go()
